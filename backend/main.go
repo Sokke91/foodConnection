@@ -1,24 +1,38 @@
 package main
 
 import (
-	"net/http"
+	"fmt"
+	"log"
 
 	"github.com/Sokke91/food-connections.git/controllers"
+	"github.com/Sokke91/food-connections.git/database"
 	"github.com/Sokke91/food-connections.git/models"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	loadEnvVariables()
+	connectDatabase()
+	serverApp()
+}
+
+func connectDatabase() {
+	database.ConnectDatabase()
+	database.DB.AutoMigrate(&models.Order{}, &models.OrderSet{})
+}
+
+func loadEnvVariables() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	} else {
+		fmt.Println("Env variables loaded")
+	}
+}
+
+func serverApp() {
 	r := gin.Default()
-
-	models.ConnectDatabase()
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-
 	protectedRoutes := r.Group("/api")
 	protectedRoutes.GET("/orders", controllers.GetOrders)
 	protectedRoutes.GET("/order/:id", controllers.GetOrderById)
@@ -27,4 +41,5 @@ func main() {
 	protectedRoutes.GET("/ordersets", controllers.GetAllOrderSets)
 	protectedRoutes.POST("/ordersets", controllers.CreateOrderSet)
 	r.Run()
+	fmt.Println("Server started")
 }

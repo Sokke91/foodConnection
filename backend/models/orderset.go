@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/Sokke91/food-connections.git/database"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +21,7 @@ type OrderSetUpdateInput struct {
 
 // Methods
 func (orderSet *OrderSet) Save() (*OrderSet, error) {
-	err := DB.Create(&orderSet).Error
+	err := database.DB.Create(&orderSet).Error
 	if err != nil {
 		return &OrderSet{}, nil
 	}
@@ -28,7 +29,7 @@ func (orderSet *OrderSet) Save() (*OrderSet, error) {
 }
 
 func (orderSet *OrderSet) Update(input OrderSetUpdateInput) (*OrderSet, error) {
-	err := DB.Model(&orderSet).Updates(input).Error
+	err := database.DB.Model(&orderSet).Updates(input).Error
 	if err != nil {
 		return &OrderSet{}, err
 	}
@@ -36,7 +37,7 @@ func (orderSet *OrderSet) Update(input OrderSetUpdateInput) (*OrderSet, error) {
 }
 
 func (orderSet *OrderSet) Delete() (bool, error) {
-	err := DB.Delete(&orderSet).Error
+	err := database.DB.Delete(&orderSet).Error
 	if err != nil {
 		return false, err
 	}
@@ -47,7 +48,7 @@ func (orderSet *OrderSet) Delete() (bool, error) {
 
 func FindOrderSetById(id string) (*OrderSet, error) {
 	var orderSet *OrderSet
-	err := DB.Where("id=?", id).First(&orderSet).Error
+	err := database.DB.Where("id=?", id).First(&orderSet).Error
 	if err != nil {
 		return &OrderSet{}, err
 	}
@@ -57,7 +58,7 @@ func FindOrderSetById(id string) (*OrderSet, error) {
 func LoadAllOrderSets() ([]*OrderSet, error) {
 	var oderSets []*OrderSet
 
-	err := DB.Find(&oderSets).Error
+	err := database.DB.Find(&oderSets).Error
 	if err != nil {
 		return []*OrderSet{}, err
 	}
